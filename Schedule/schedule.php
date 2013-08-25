@@ -5,6 +5,7 @@ require 'dom.class.php';
 
 /*
   This is the barebone code for parsing the schedule page.
+  This code has been derived from Jeff Verkoeyen's uwdata.ca scraper
   See usage below.
 */
 
