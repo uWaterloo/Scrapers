@@ -73,7 +73,7 @@ The code currently fails for the following courses, where not all information is
 - [CS 246](http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?sess=1139&subject=CS&level=under&cournum=246)
 
 
-## How can I help?
+### How can I help?
 
 Any improvements to the scrapers are appreciated:
 
