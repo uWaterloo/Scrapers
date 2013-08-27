@@ -47,6 +47,8 @@ Array
                                     [weekdays] => MWF
                                     [start_date] =>
                                     [end_date] =>
+                                    [is_tba] =>
+                                    [is_cancelled] =>
                                 )
                             [location] => B1 370
                             [instructor] => O'Donovan,Chris
@@ -84,6 +86,8 @@ Array
                                     [weekdays] => F
                                     [start_date] =>
                                     [end_date] =>
+                                    [is_tba] =>
+                                    [is_cancelled] =>
                                 )
                             [location] => B1 370
                             [instructor] => O'Donovan,Chris
