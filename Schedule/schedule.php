@@ -57,13 +57,27 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           continue;
         }// end of if
         
-        // Ensure we are not a full-width row
-        if(count($row->find('td[colspan=10]')) > 0) {
-          continue;
-        }// end of if
-        
-        /** RESERVES **/
-        if(count($row->find('td[colspan=6]')) > 0) {
+        /* Take action
+            if colspan=10
+              some information.. Looking for the 'Cancelled Section' at the end.
+            else if colspan = 6
+              This is a reserve.
+        */
+        if (count($row->find('td[colspan=10]')) > 0) {
+          $index = 0;
+          
+          foreach ($row->find('td') as $td) { 
+            if ($index >= count($col_keys)) {
+              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
+                if (beautify($td->innertext) == 'Cancelled Section') {
+                  $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['cancelled'] = true;
+                }// end of if
+              }// end of if
+            }// end of if
+            
+            $index += max(1, intval($td->colspan));
+          }// end of foreach
+        } else if(count($row->find('td[colspan=6]')) > 0) {
           $index         = 0;
           $reserve       = array();
           $class_class   = array();
@@ -87,9 +101,10 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
               if ($class_col_keys[$index - count($col_keys)] == 'dates') {
                 $value = beautify($td->innertext);
                 $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($value);
-                
-                if ($value != '')
+                                
+                if ($value != '') {
                   $dateFound = true;
+                }// end of if
               } else {
                 $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
               }// end of if/else
@@ -212,6 +227,9 @@ function parse_date($strDate) {
   
   $tbaRegex = preg_match("/TBA/", $strDate);
   $date['tba'] = $tbaRegex == 1;
+  
+  $cancelledRegex = preg_match("/Cancelled Section/", $strDate);
+  $date['cancelled'] = $cancelledRegex == 1;
   
   $strDate = beautify($strDate);
   $matchResult = preg_match("/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)?\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/", $strDate, $match);
