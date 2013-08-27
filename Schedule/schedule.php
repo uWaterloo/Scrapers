@@ -72,6 +72,9 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             $class_class[$key] = '';
           }// end of foreach
           
+          // Variable to store if a class was found on this row
+          $dateFound = false;
+          
           foreach($row->find('td') as $td) {
             if ($index == 0) {
               $reserve['reserve_group'] = beautify($td->innertext, true);
@@ -82,7 +85,11 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
               }// end of if
             } else {
               if ($class_col_keys[$index - count($col_keys)] == 'dates') {
-                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($td->innertext);
+                $value = beautify($td->innertext);
+                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($value);
+                
+                if ($value != '')
+                  $dateFound = true;
               } else {
                 $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
               }// end of if/else
@@ -91,7 +98,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             $index += max(1, intval($td->colspan));
           }// end of foreach
           
-          if ($class_class['dates'] != '&nbsp') {
+          if ($dateFound) {
             $classes[count($classes) - 1]['classes'][] = $class_class;
           }// end of if
           
@@ -192,27 +199,33 @@ function beautify($data, $removeHeaders = false) {
 }// end of beatify_data method
 
 function parse_date($strDate) {
+  // Ensure data is cleared of unwanted characters.
+  $strDate = beautify($strDate);
+  
   $date = array('start_time' => '',
                 'end_time'   => '',
                 'weekdays'  => '',
                 'start_date' => '',
                 'end_date'   => '');
-  $match = array();
+  
+  $match      = array();
   
   $strDate = beautify($strDate);
-  $dateRegex = "/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/";
-  $matchResult = preg_match($dateRegex, $strDate, $match);
+  $matchResult = preg_match("/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)?\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/", $strDate, $match);
       
   // match was successful
   if ($matchResult === 1) {
-    if (count($match) >= 4) {
+    if (count($match) >= 3) {
       $date['start_time'] = $match[1];
       $date['end_time']   = $match[2];
-      $date['weekdays']   = $match[3];
       
-      if (count($match) >= 6) {
-        $date['start_date'] = $match[4];
-        $date['end_date']   = $match[5];
+      if (count($match) >= 4) {
+        $date['weekdays']   = $match[3];
+      
+        if (count($match) >= 6) {
+          $date['start_date'] = $match[4];
+          $date['end_date']   = $match[5];
+        }// end of if
       }// end of if
     }
   }// end of if
@@ -221,12 +234,17 @@ function parse_date($strDate) {
 }// End of parse_date function
 
 // Usage
-print_r(parse_schedule('1139', 'PHYS', '236'));
+/*print_r(parse_schedule('1139', 'PHYS', '236'));
 print_r(parse_schedule('1139', 'PHYS', '131L'));
 print_r(parse_schedule('1139', 'PHYS', '454'));
 print_r(parse_schedule('1139', 'PHYS', '353L'));
 print_r(parse_schedule('1139', 'PHYS', '121L'));
-print_r(parse_schedule('1139', 'CS', '246'));
+print_r(parse_schedule('1139', 'CS', '246'));*/
+
+print_r(parse_schedule('1139', 'PHYS', '131L'));
+print_r(parse_schedule('1131', 'PHYS', '380'));
+print_r(parse_schedule('1139', 'PHYS', '490'));
+print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));
 
 
 ?>
