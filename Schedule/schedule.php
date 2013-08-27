@@ -70,7 +70,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             if ($index >= count($col_keys)) {
               if ($class_col_keys[$index - count($col_keys)] == 'dates') {
                 if (beautify($td->innertext) == 'Cancelled Section') {
-                  $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['cancelled'] = true;
+                  $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['is_cancelled'] = true;
                 }// end of if
               }// end of if
             }// end of if
@@ -226,10 +226,10 @@ function parse_date($strDate) {
   $match      = array();
   
   $tbaRegex = preg_match("/TBA/", $strDate);
-  $date['tba'] = $tbaRegex == 1;
+  $date['is_tba'] = $tbaRegex == 1;
   
   $cancelledRegex = preg_match("/Cancelled Section/", $strDate);
-  $date['cancelled'] = $cancelledRegex == 1;
+  $date['is_cancelled'] = $cancelledRegex == 1;
   
   $strDate = beautify($strDate);
   $matchResult = preg_match("/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)?\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/", $strDate, $match);
