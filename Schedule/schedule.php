@@ -63,24 +63,32 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
         
         /** RESERVES **/
         if(count($row->find('td[colspan=6]')) > 0) {
-          $index   = 0;
-          $reserve = array();
+          $index         = 0;
+          $reserve       = array();
+          $class_class   = array();
+          
+          foreach ($class_col_keys as $key) {
+            $class_class[$key] = '';
+          }// end of foreach
           
           foreach($row->find('td') as $td) {
             if ($index == 0) {
               $reserve['reserve_group'] = trim($td->innertext);
-            } else {
+            } else if ($index < count($col_keys)) {
               $text = trim($td->innertext);
               if ($text) {
                 $reserve[$col_keys[$index]] = $text;
               }// end of if
+            } else {
+              $class_class[$class_col_keys[$index - count($col_keys)]] = trim($td->innertext);
             }// end of if/else
             
             $index += max(1, intval($td->colspan));
-            
-            if ($index >= count($col_keys))
-              break;
           }// end of foreach
+          
+          if ($class_class['dates'] != '&nbsp') {
+            $classes[count($classes) - 1]['classes'][] = $class_class;
+          }// end of if
           
           if(!isset($classes[count($classes) - 1]['reserves'])) {
             $classes[count($classes) - 1]['reserves'] = array();
@@ -117,7 +125,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           
           // handle multiple classes for one section
           if (!is_numeric($new_class[$col_keys[0]])) {
-            $classes[count($classes) - 1]['classes'] = array_merge($new_class['classes'], $classes[count($classes) - 1]['classes']);
+            $classes[count($classes) - 1]['classes'] = array_merge($classes[count($classes) - 1]['classes'], $new_class['classes']);
           } else {
             $classes[] = $new_class;
           }// end of if/else
