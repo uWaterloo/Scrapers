@@ -210,6 +210,9 @@ function parse_date($strDate) {
   
   $match      = array();
   
+  $tbaRegex = preg_match("/TBA/", $strDate);
+  $date['tba'] = $tbaRegex == 1;
+  
   $strDate = beautify($strDate);
   $matchResult = preg_match("/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)?\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/", $strDate, $match);
       
