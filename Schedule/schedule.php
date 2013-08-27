@@ -81,7 +81,11 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
                 $reserve[$col_keys[$index]] = $text;
               }// end of if
             } else {
-              $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
+              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
+                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($td->innertext);
+              } else {
+                $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
+              }// end of if/else
             }// end of if/else
             
             $index += max(1, intval($td->colspan));
@@ -118,7 +122,11 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             if ($index < count($col_keys)) {
               $new_class[$col_keys[$index]] = beautify($td->innertext);
             } else {
-              $new_class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
+              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
+                $new_class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($td->innertext);
+              } else {
+                $new_class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
+              }// end of if/else
             }// end of if/else
             
             $index += max(1, intval($td->colspan));
@@ -182,6 +190,35 @@ function beautify($data, $removeHeaders = false) {
   
   return $data;
 }// end of beatify_data method
+
+function parse_date($strDate) {
+  $date = array('start_time' => '',
+                'end_time'   => '',
+                'weekdays'  => '',
+                'start_date' => '',
+                'end_date'   => '');
+  $match = array();
+  
+  $strDate = beautify($strDate);
+  $dateRegex = "/(\d{2}:\d{2})-(\d{2}:\d{2})(\w+)\s*(?:(\d{2}\/\d{2})-(\d{2}\/\d{2}))?.*/";
+  $matchResult = preg_match($dateRegex, $strDate, $match);
+      
+  // match was successful
+  if ($matchResult === 1) {
+    if (count($match) >= 4) {
+      $date['start_time'] = $match[1];
+      $date['end_time']   = $match[2];
+      $date['weekdays']   = $match[3];
+      
+      if (count($match) >= 6) {
+        $date['start_date'] = $match[4];
+        $date['end_date']   = $match[5];
+      }// end of if
+    }
+  }// end of if
+  
+  return $date;
+}// End of parse_date function
 
 // Usage
 print_r(parse_schedule('1139', 'PHYS', '236'));
