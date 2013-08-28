@@ -33,6 +33,7 @@ Array
             [enrollment_total] => 84
             [waiting_capacity] => 0
             [waiting_total] => 0
+            [topic] =>
             [reserves] => Array
                 (
                 )
@@ -50,9 +51,16 @@ Array
                                     [is_tba] =>
                                     [is_cancelled] =>
                                 )
-                            [location] => B1 370
+                            [location] => Array
+                                (
+                                    [building] => B1
+                                    [room] => 370
+                                )
                             [instructor] => O'Donovan,Chris
                         )
+                )
+            [held_with] => Array
+                (
                 )
         )
 
@@ -72,6 +80,7 @@ Array
             [enrollment_total] => 84
             [waiting_capacity] => 0
             [waiting_total] => 0
+            [topic] =>
             [reserves] => Array
                 (
                 )
@@ -89,9 +98,16 @@ Array
                                     [is_tba] =>
                                     [is_cancelled] =>
                                 )
-                            [location] => B1 370
+                            [location] => Array
+                                (
+                                    [building] => B1
+                                    [room] => 370
+                                )
                             [instructor] => O'Donovan,Chris
                         )
+                )
+            [held_with] => Array
+                (
                 )
         )
 )
