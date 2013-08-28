@@ -50,7 +50,11 @@ Array
                                     [is_tba] =>
                                     [is_cancelled] =>
                                 )
-                            [location] => B1 370
+                            [location] => Array
+                                (
+                                    [building] => B1
+                                    [room] => 370
+                                )
                             [instructor] => O'Donovan,Chris
                         )
                 )
@@ -89,7 +93,11 @@ Array
                                     [is_tba] =>
                                     [is_cancelled] =>
                                 )
-                            [location] => B1 370
+                            [location] => Array
+                                (
+                                    [building] => B1
+                                    [room] => 370
+                                )
                             [instructor] => O'Donovan,Chris
                         )
                 )
