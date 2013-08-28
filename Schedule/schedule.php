@@ -68,155 +68,116 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           continue;
         }// end of if
         
-        /* Take action
-            if colspan=10
-              some information.. Looking for the 'Cancelled Section' at the end.
-            else if colspan = 6
-              This is a reserve.
-        */
-        if (count($row->find('td[colspan=10]')) > 0) {
-          $index = 0;
-          
-          foreach ($row->find('td') as $td) { 
-            if ($index == 0) { 
-              $rawData = $td->innertext;
-              $data = beautify($rawData, true);
-              
-              // Take action based on the data
-              if (preg_match('/Held With/', $rawData) == 1) {
-                $classes[count($classes) - 1]['held_with'][] = $data;
-              } else if (preg_match('/Topic/', $rawData) == 1) {
-                $classes[count($classes) - 1]['topic'] = $data;
-              }// end of if/else
-            } else if ($index >= count($col_keys)) {
-              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
-                if (beautify($td->innertext) == 'Cancelled Section') {
-                  $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['is_cancelled'] = true;
-                }// end of if
-                if (beautify($td->innertext) == 'Closed Section') {
-                  $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['is_closed'] = true;
-                }// end of if
-              }// end of if
-            }// end of if/else
+        // Variables for use while iterating and for storing found data
+        $index       = 0;
+        $reserve     = array();
+        $class_class = array();
+        
+        $new_class = $active_course;
+        
+        /** CLASS INFORMATION **/
+        foreach ($col_keys as $key) {
+          $new_class[$key] = '';
+        }// end of foreach
+        
+        foreach ($additional_keys as $key) {
+          $new_class[$key] = '';
+        }// end of foreach
+        
+        foreach ($additional_keys_arrays as $key) {
+          $new_class[$key] = array();
+        }// end of foreach
+                  
+        $new_class['classes'] = array();
+        
+        // Configure the class_class
+        foreach ($class_col_keys as $key) {
+          $class_class[$key] = '';
+        }// end of foreach
+        
+        foreach ($class_additional_keys as $key) {
+          $class_class[$key] = '';
+        }// end of foreach
+        
+        foreach ($class_additional_keys_arrays as $key) {
+          $class_class[$key] = array();
+        }// end of foreach
+        
+        // Variable to store if a class was found on this row
+        $dateFound = false;
+        
+        // Iterate over each cell
+        foreach ($row->find('td') as $td) { 
+          // Take action for special cells
+          if ($index == 0 && $td->colspan == 10) {  // Either Held With or Topic
+            $rawData = $td->innertext;
+            $data = beautify($rawData, true);
             
-            $index += max(1, intval($td->colspan));
-          }// end of foreach
-        } else if(count($row->find('td[colspan=6]')) > 0) {
-          $index         = 0;
-          $reserve       = array();
-          $class_class   = array();
-          
-          foreach ($class_col_keys as $key) {
-            $class_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($class_additional_keys as $key) {
-            $class_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($class_additional_keys_arrays as $key) {
-            $class_class[$key] = array();
-          }// end of foreach
-          
-          // Variable to store if a class was found on this row
-          $dateFound = false;
-          
-          foreach($row->find('td') as $td) {
+            // Take action based on the data
+            if (preg_match('/Held With/', $rawData) == 1) {
+              $classes[count($classes) - 1]['held_with'][] = $data;
+            } else if (preg_match('/Topic/', $rawData) == 1) {
+              $classes[count($classes) - 1]['topic'] = $data;
+            }// end of if/else
+          } else if ($index < count($col_keys) && count($row->find('td[colspan=6]')) > 0) { // Reserve
             if ($index == 0) {
               $reserve['reserve_group'] = beautify($td->innertext, true);
-            } else if ($index < count($col_keys)) {
+            } else {
               $text = beautify($td->innertext);
               if ($text) {
                 $reserve[$col_keys[$index]] = $text;
               }// end of if
-            } else {
-              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
-                $value = beautify($td->innertext);
-                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($value);
-                                
-                if ($value != '') {
-                  $dateFound = true;
-                }// end of if
-              } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
-                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
-              } else {
-                $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
-              }// end of if/else
             }// end of if/else
-            
-            $index += max(1, intval($td->colspan));
-          }// end of foreach
-          
-          if ($dateFound) {
-            $classes[count($classes) - 1]['classes'][] = $class_class;
-          }// end of if
-
-          $classes[count($classes) - 1]['reserves'][] = $reserve;
-        } else {
-          $index     = 0;
-          $new_class = $active_course;
-          
-          /** CLASS INFORMATION **/
-          foreach ($col_keys as $key) {
-            $new_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($additional_keys as $key) {
-            $new_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($additional_keys_arrays as $key) {
-            $new_class[$key] = array();
-          }// end of foreach
-                    
-          $new_class['classes'] = array();
-          $new_class_class      = array();
-          
-          foreach ($class_col_keys as $key) {
-            $new_class_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($class_additional_keys as $key) {
-            $new_class_class[$key] = '';
-          }// end of foreach
-          
-          foreach ($class_additional_keys_arrays as $key) {
-            $new_class_class[$key] = array();
-          }// end of foreach
-          
-          foreach ($row->find('td') as $td) {             
-            if ($index < count($col_keys)) {
-              $new_class[$col_keys[$index]] = beautify($td->innertext);
-            } else {
-              if ($class_col_keys[$index - count($col_keys)] == 'dates') {
-                $new_class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($td->innertext);
-              } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
-                $new_class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
-              } else {
-                $new_class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
-              }// end of if/else
-            }// end of if/else
-            
-            $index += max(1, intval($td->colspan));
-          }// end of foreach
-          
-          // ensure any numeric fields have a numeric value
-          foreach ($new_class as $key => $value) {
-            if (in_array($key, $numeric_col_keys)) {
-              if (!is_numeric($value)) {
-                $new_class[$key] = 0; // give it a value of 0
-              }// end of if
-            }// end of if
-          }// end of foreach
-          
-          $new_class['classes'][] = $new_class_class;
-          
-          // handle multiple classes for one section
-          if (!is_numeric($new_class[$col_keys[0]])) {
-            $classes[count($classes) - 1]['classes'] = array_merge($classes[count($classes) - 1]['classes'], $new_class['classes']);
+          } else if ($index < count($col_keys)) {
+            $new_class[$col_keys[$index]] = beautify($td->innertext);
           } else {
-            $classes[] = $new_class;
-          }// end of if/else
+            if ($class_col_keys[$index - count($col_keys)] == 'dates') {
+              $value = beautify($td->innertext);
+              $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($value);
+                              
+              if ($value != '') {
+                $dateFound = true;
+              }// end of if
+            } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
+              $class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
+            } else {
+              $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
+            }// end of if/else
+          }// end of if/else if/else
+          
+          $index += max(1, intval($td->colspan));
+        }// end of foreach
+          
+        // ensure any numeric fields have a numeric value
+        foreach ($new_class as $key => $value) {
+          if (in_array($key, $numeric_col_keys)) {
+            if (!is_numeric($value)) {
+              $new_class[$key] = 0; // give it a value of 0
+            }// end of if
+          }// end of if
+        }// end of foreach
+        
+        // Add a reserve, it it was found
+        if (isset($reserve['reserve_group'])) {
+          $classes[count($classes) - 1]['reserves'][] = $reserve;
+        }
+        
+        if ($class_class['dates']['is_cancelled'] || $class_class['dates']['is_closed']) {
+          $previousClass = $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1];
+          
+          $previousClass['dates']['is_cancelled'] = $class_class['dates']['is_cancelled'];
+          $previousClass['dates']['is_closed']    = $class_class['dates']['is_closed'];
+          
+          $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1] = $previousClass;
+        } else {
+          $new_class['classes'][] = $class_class;
+        }// end of if/else
+        
+        // handle multiple classes for one section
+        if ($dateFound && !is_numeric($new_class[$col_keys[0]])) {
+          $classes[count($classes) - 1]['classes'] = array_merge($classes[count($classes) - 1]['classes'], $new_class['classes']);
+        } else if (is_numeric($new_class[$col_keys[0]])) { // new class was set
+          $classes[] = $new_class;
         }// end of if/else
       }// end of foreach
     }// end of if
@@ -356,7 +317,6 @@ print_r(parse_schedule('1131', 'PHYS', '380'));
 print_r(parse_schedule('1139', 'PHYS', '490'));
 print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));*/
 
-print_r(parse_schedule('1139', 'PHYS', '460B'));
-print_r(parse_schedule('1139', 'PHYS', '490'));
+print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));
 
 ?>
