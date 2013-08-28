@@ -19,12 +19,23 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
   
   $data = file_get_contents('http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?'.$query);
   
+  // Column data keys
   $col_keys = array('course_id', 'section', 'campus', 'associated_classes', 
                     'related_component_1', 'related_component_2', 'enrollment_capacity',
                     'enrollment_total', 'waiting_capacity', 'waiting_total');
+  
   $numeric_col_keys = array('enrollment_capacity', 'enrollment_total', 'waiting_capacity', 'waiting_total');
-                    
+  
+  // Additional data that may exist for a section
+  $additional_keys = array('topic');
+  $additional_keys_arrays = array('reserves', 'classes', 'held_with');
+  
+  // Column keys for class data
   $class_col_keys = array('dates', 'location', 'instructor');
+  
+  // Additional data for classes ('dates')
+  $class_additional_keys = array();
+  $class_additional_keys_arrays = array();
   
   $html = str_get_html($data);
   unset($data);
@@ -67,13 +78,23 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           $index = 0;
           
           foreach ($row->find('td') as $td) { 
-            if ($index >= count($col_keys)) {
+            if ($index == 0) { 
+              $rawData = $td->innertext;
+              $data = beautify($rawData, true);
+              
+              // Take action based on the data
+              if (preg_match('/Held With/', $rawData) == 1) {
+                $classes[count($classes) - 1]['held_with'][] = $data;
+              } else if (preg_match('/Topic/', $rawData) == 1) {
+                $classes[count($classes) - 1]['topic'] = $data;
+              }// end of if/else
+            } else if ($index >= count($col_keys)) {
               if ($class_col_keys[$index - count($col_keys)] == 'dates') {
                 if (beautify($td->innertext) == 'Cancelled Section') {
                   $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1]['dates']['is_cancelled'] = true;
                 }// end of if
               }// end of if
-            }// end of if
+            }// end of if/else
             
             $index += max(1, intval($td->colspan));
           }// end of foreach
@@ -84,6 +105,14 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           
           foreach ($class_col_keys as $key) {
             $class_class[$key] = '';
+          }// end of foreach
+          
+          foreach ($class_additional_keys as $key) {
+            $class_class[$key] = '';
+          }// end of foreach
+          
+          foreach ($class_additional_keys_arrays as $key) {
+            $class_class[$key] = array();
           }// end of foreach
           
           // Variable to store if a class was found on this row
@@ -105,6 +134,8 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
                 if ($value != '') {
                   $dateFound = true;
                 }// end of if
+              } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
+                $class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
               } else {
                 $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
               }// end of if/else
@@ -116,11 +147,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           if ($dateFound) {
             $classes[count($classes) - 1]['classes'][] = $class_class;
           }// end of if
-          
-          if(!isset($classes[count($classes) - 1]['reserves'])) {
-            $classes[count($classes) - 1]['reserves'] = array();
-          }// end of if
-          
+
           $classes[count($classes) - 1]['reserves'][] = $reserve;
         } else {
           $index     = 0;
@@ -131,7 +158,13 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             $new_class[$key] = '';
           }// end of foreach
           
-          $new_class['reserves'] = array();
+          foreach ($additional_keys as $key) {
+            $new_class[$key] = '';
+          }// end of foreach
+          
+          foreach ($additional_keys_arrays as $key) {
+            $new_class[$key] = array();
+          }// end of foreach
                     
           $new_class['classes'] = array();
           $new_class_class      = array();
@@ -140,12 +173,22 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
             $new_class_class[$key] = '';
           }// end of foreach
           
+          foreach ($class_additional_keys as $key) {
+            $new_class_class[$key] = '';
+          }// end of foreach
+          
+          foreach ($class_additional_keys_arrays as $key) {
+            $new_class_class[$key] = array();
+          }// end of foreach
+          
           foreach ($row->find('td') as $td) {             
             if ($index < count($col_keys)) {
               $new_class[$col_keys[$index]] = beautify($td->innertext);
             } else {
               if ($class_col_keys[$index - count($col_keys)] == 'dates') {
                 $new_class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($td->innertext);
+              } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
+                $new_class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
               } else {
                 $new_class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
               }// end of if/else
@@ -208,6 +251,8 @@ function beautify($data, $removeHeaders = false) {
   if ($removeHeaders) {
     $data = str_replace('Notes: ', '', $data);
     $data = str_replace('Reserve: ', '', $data);
+    $data = str_replace('Held With: ', '', $data);
+    $data = str_replace('Topic: ', '', $data);
   }// end of if
   
   return $data;
@@ -254,18 +299,39 @@ function parse_date($strDate) {
   return $date;
 }// End of parse_date function
 
+function parse_location($strLocation) {
+  // Ensure data is 'beautiful'
+  $strLocation = beautify($strLocation);
+  
+  // Arrays for use
+  $location = array('building' => '', 'room' => '');
+  
+  // Regular expresion
+  $locationMatch = array();
+  $locationRegex = preg_match('/(\S+) (\S+)/', $strLocation, $locationMatch);
+  
+  if ($locationRegex == 1 && count($locationMatch >= 3)) {
+    $location['building'] = $locationMatch[1];
+    $location['room']     = $locationMatch[2];
+  }// end of if
+  
+  return $location;
+}// End of parse_location function
+
 // Usage
 /*print_r(parse_schedule('1139', 'PHYS', '236'));
 print_r(parse_schedule('1139', 'PHYS', '131L'));
 print_r(parse_schedule('1139', 'PHYS', '454'));
 print_r(parse_schedule('1139', 'PHYS', '353L'));
 print_r(parse_schedule('1139', 'PHYS', '121L'));
-print_r(parse_schedule('1139', 'CS', '246'));*/
+print_r(parse_schedule('1139', 'CS', '246'));
 
 print_r(parse_schedule('1139', 'PHYS', '131L'));
 print_r(parse_schedule('1131', 'PHYS', '380'));
 print_r(parse_schedule('1139', 'PHYS', '490'));
-print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));
+print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));*/
 
+print_r(parse_schedule('1139', 'PHYS', '460B'));
+print_r(parse_schedule('1139', 'PHYS', '490'));
 
 ?>
