@@ -282,8 +282,9 @@ function parse_date($strDate) {
   // match was successful
   if ($matchResult === 1) {
     if (count($match) >= 3) {
-      $date['start_time'] = $match[1];
-      $date['end_time']   = $match[2];
+      $parsed_date = normalize_date($match[1], $match[2]);
+      $date['start_time'] = $parsed_date[0];
+      $date['end_time'] = $parsed_date[1];
       
       if (count($match) >= 4) {
         $date['weekdays']   = $match[3];
@@ -317,6 +318,29 @@ function parse_location($strLocation) {
   
   return $location;
 }// End of parse_location function
+
+
+function normalize_date($start, $end) {
+  list($start_hr, $start_min) = explode(':', $start);
+  list($end_hr, $end_min)     = explode(':', $end); 
+
+  // takes advantage of loose typing
+  if($start_hr > $end_hr) {
+    $end_hr += 12;
+  }
+
+  if($start_hr <= 7) {
+    $start_hr += 12;
+    $end_hr += 12;
+  }
+
+  if($end_hr == 12 && $end_min == 0) {
+    $end_hr = '00';
+  }
+
+  return array($start_hr.':'.$start_min, $end_hr.':'.$end_min);
+}
+
 
 // Usage
 /*print_r(parse_schedule('1139', 'PHYS', '236'));
