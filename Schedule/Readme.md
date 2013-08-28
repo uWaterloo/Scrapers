@@ -33,6 +33,7 @@ Array
             [enrollment_total] => 84
             [waiting_capacity] => 0
             [waiting_total] => 0
+            [topic] =>
             [reserves] => Array
                 (
                 )
@@ -58,6 +59,9 @@ Array
                             [instructor] => O'Donovan,Chris
                         )
                 )
+            [held_with] => Array
+                (
+                )
         )
 
     [1] => Array
@@ -76,6 +80,7 @@ Array
             [enrollment_total] => 84
             [waiting_capacity] => 0
             [waiting_total] => 0
+            [topic] =>
             [reserves] => Array
                 (
                 )
@@ -100,6 +105,9 @@ Array
                                 )
                             [instructor] => O'Donovan,Chris
                         )
+                )
+            [held_with] => Array
+                (
                 )
         )
 )
