@@ -31,11 +31,11 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
   $additional_keys_arrays = array('reserves', 'classes', 'held_with');
   
   // Column keys for class data
-  $class_col_keys = array('dates', 'location', 'instructor');
+  $class_col_keys = array('dates', 'location', 'instructors');
   
   // Additional data for classes ('dates')
   $class_additional_keys = array();
-  $class_additional_keys_arrays = array();
+  $class_additional_keys_arrays = array('instructors');
   
   $html = str_get_html($data);
   unset($data);
@@ -140,6 +140,15 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
               }// end of if
             } else if ($class_col_keys[$index - count($col_keys)] == 'location') {
               $class_class[$class_col_keys[$index - count($col_keys)]] = parse_location($td->innertext);
+            } else if ($class_col_keys[$index - count($col_keys)] == 'instructors') {
+              if ($dateFound) {
+                $class_class[$class_col_keys[$index - count($col_keys)]][] = beautify($td->innertext);
+              } else {
+                $previousClass = $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1];
+                $previousClass['instructors'][] = beautify($td->innertext);
+                
+                $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1] = $previousClass;
+              }// end of if/else
             } else {
               $class_class[$class_col_keys[$index - count($col_keys)]] = beautify($td->innertext);
             }// end of if/else
@@ -305,7 +314,7 @@ function normalize_date($start, $end) {
 
 
 // Usage
-/*print_r(parse_schedule('1139', 'PHYS', '236'));
+print_r(parse_schedule('1139', 'PHYS', '236'));
 print_r(parse_schedule('1139', 'PHYS', '131L'));
 print_r(parse_schedule('1139', 'PHYS', '454'));
 print_r(parse_schedule('1139', 'PHYS', '353L'));
@@ -315,8 +324,7 @@ print_r(parse_schedule('1139', 'CS', '246'));
 print_r(parse_schedule('1139', 'PHYS', '131L'));
 print_r(parse_schedule('1131', 'PHYS', '380'));
 print_r(parse_schedule('1139', 'PHYS', '490'));
-print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));*/
-
 print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));
 
+print_r(parse_schedule('1139', 'PHYS', '611', 'grad'));
 ?>
