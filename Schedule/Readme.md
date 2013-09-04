@@ -56,7 +56,10 @@ Array
                                     [building] => B1
                                     [room] => 370
                                 )
-                            [instructor] => O'Donovan,Chris
+                            [instructors] => Array
+                                (
+                                    [0] => O'Donovan,Chris
+                                )
                         )
                 )
             [held_with] => Array
@@ -103,7 +106,10 @@ Array
                                     [building] => B1
                                     [room] => 370
                                 )
-                            [instructor] => O'Donovan,Chris
+                            [instructors] => Array
+                                (
+                                    [0] => O'Donovan,Chris
+                                )
                         )
                 )
             [held_with] => Array
