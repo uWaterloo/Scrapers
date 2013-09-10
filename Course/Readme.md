@@ -25,14 +25,18 @@ Array
             [0] => LEC
             [1] => TUT
         )
-
     [id] => 006872
     [title] => Calculus 2 for the Sciences
     [description] => Transforming and evaluating integrals; application to volumes and arc length; improper integrals. Separable and linear first order differential equations and applications. Introduction to sequences. Convergence of series; Taylor polynomials, Taylor's Remainder Theorem, Taylor series and applications. Parametric/vector representation of curves; particle motion and arc length. Polar coordinates in the plane. [Offered: F,W,S]
     [prerequisites] => Prereq: One of MATH 117, 127, 137, 147.
     [antirequisites] => Antireq: MATH 118, 119, 138, 148
     [offered_online] => 1
-    [terms_offered] => F,W,S
+    [terms_offered] => Array
+        (
+            [0] => F
+            [1] => W
+            [2] => S
+        )
 )
 ```
 

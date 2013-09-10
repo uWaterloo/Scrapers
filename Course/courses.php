@@ -173,15 +173,19 @@ function parse_courses($subject)
         $course['extra'] = $extra_fields;
       }
 
+      $terms_data = NULL;
+
       if(strpos($course['description'], 'Offered:') !== false )
       {
-        $course['terms_offered'] = trim(end(explode('Offered:', $course['description'])), "()[],;. ");
+        $terms_data = trim(end(explode('Offered:', $course['description'])), "()[],;. ");
       }
 
       if(strpos($course['notes'], 'Offered:') !== false )
       {
-        $course['terms_offered'] = trim(end(explode('Offered:', $course['notes'])), "()[],;. ");
+        $terms_data = trim(end(explode('Offered:', $course['notes'])), "()[],;. ");
       }
+
+      $course['terms_offered'] = ($terms_data != NULL) ? explode(',', $terms_data) : array();
 
       $courses[] = $course;
     }
