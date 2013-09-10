@@ -52,28 +52,14 @@ function parse_courses($subject)
       $course['calendar_year'] = $year;
 
       $offerings = explode(',', $course['offerings']);
+      $instructions = array('cln', 'dis', 'ens', 'ess', 'fld', 'lab', 'lec', 'orl', 'wrk',
+                            'pra', 'prj', 'rdg', 'sem', 'stu', 'tlc', 'tst', 'tut', 'wsp');
 
       foreach($offerings as $offering)
       {
-        if($offering == 'LEC')
+        if(in_array(strtolower($offering), $instructions))
         {
-          $course['has_lecture'] = true;
-        } 
-        elseif($offering == 'TUT')
-        {
-          $course['has_tutorial'] = true;
-        } 
-        elseif($offering == 'LAB')
-        {
-          $course['has_lab'] = true;
-        } 
-        elseif($offering == 'PRJ')
-        {
-          $course['has_project'] = true;
-        }
-        elseif($offering == 'TST')
-        {
-          $course['has_test'] = true;
+          $course['instructions'][] = $offering;
         }
       }
 

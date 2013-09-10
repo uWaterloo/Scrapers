@@ -20,8 +20,12 @@ Array
     [url] => http://www.ucalendar.uwaterloo.ca/1314/COURSE/course-MATH.html#MATH128
     [type] => Undergraduate
     [calendar_year] => 1314
-    [has_lecture] => 1
-    [has_tutorial] => 1
+    [instructions] => Array
+        (
+            [0] => LEC
+            [1] => TUT
+        )
+
     [id] => 006872
     [title] => Calculus 2 for the Sciences
     [description] => Transforming and evaluating integrals; application to volumes and arc length; improper integrals. Separable and linear first order differential equations and applications. Introduction to sequences. Convergence of series; Taylor polynomials, Taylor's Remainder Theorem, Taylor series and applications. Parametric/vector representation of curves; particle motion and arc length. Polar coordinates in the plane. [Offered: F,W,S]
