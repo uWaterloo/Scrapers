@@ -11,33 +11,45 @@ echo parse_courses('MATH');
 
 ### Output
 
-```
-Array
-(
-    [department] => MATH
-    [number] => 128
-    [credits] => 0.50
-    [url] => http://www.ucalendar.uwaterloo.ca/1314/COURSE/course-MATH.html#MATH128
-    [type] => Undergraduate
-    [calendar_year] => 1314
-    [instructions] => Array
-        (
-            [0] => LEC
-            [1] => TUT
-        )
-    [id] => 006872
-    [title] => Calculus 2 for the Sciences
-    [description] => Transforming and evaluating integrals; application to volumes and arc length; improper integrals. Separable and linear first order differential equations and applications. Introduction to sequences. Convergence of series; Taylor polynomials, Taylor's Remainder Theorem, Taylor series and applications. Parametric/vector representation of curves; particle motion and arc length. Polar coordinates in the plane. [Offered: F,W,S]
-    [prerequisites] => Prereq: One of MATH 117, 127, 137, 147.
-    [antirequisites] => Antireq: MATH 118, 119, 138, 148
-    [offered_online] => 1
-    [terms_offered] => Array
-        (
-            [0] => F
-            [1] => W
-            [2] => S
-        )
-)
+```json
+{
+   "id":"006872",
+   "department":"MATH",
+   "number":"128",
+   "title":"Calculus 2 for the Sciences",
+   "credits":"0.50",
+   "description":"Transforming and evaluating integrals; application to volumes and arc length; improper integrals. Separable and linear first order differential equations and applications. Introduction to sequences. Convergence of series; Taylor polynomials, Taylor's Remainder Theorem, Taylor series and applications. Parametric\/vector representation of curves; particle motion and arc length. Polar coordinates in the plane. [Offered: F,W,S]",
+   "instructions":[
+      "LEC",
+      "TUT"
+   ],
+   "prerequisites":"Prereq: One of MATH 117, 127, 137, 147.",
+   "antirequisites":"Antireq: MATH 118, 119, 138, 148",
+   "corequisites":null,
+   "crosslistings":null,
+   "terms_offered":[
+      "F",
+      "W",
+      "S"
+   ],
+   "offerings":{
+      "online":true,
+      "online_only":false,
+      "st_jerome":false,
+      "st_jerome_only":false,
+      "renison":false,
+      "renison_only":false,
+      "conrad_grebel":false,
+      "conrad_grebel_only":false
+   },
+   "needs_department_consent":false,
+   "needs_instructor_consent":false,
+   "extra":null,
+   "notes":null,
+   "calendar_year":"1314",
+   "type":"undergraduate",
+   "url":"http:\/\/www.ucalendar.uwaterloo.ca\/1314\/COURSE\/course-MATH.html#MATH128"
+}
 ```
 
 ### How can I help?
