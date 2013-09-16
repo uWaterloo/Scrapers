@@ -23,8 +23,8 @@ echo parse_courses('MATH');
       "LEC",
       "TUT"
    ],
-   "prerequisites":"Prereq: One of MATH 117, 127, 137, 147.",
-   "antirequisites":"Antireq: MATH 118, 119, 138, 148",
+   "prerequisites":"One of MATH 117, 127, 137, 147.",
+   "antirequisites":"MATH 118, 119, 138, 148",
    "corequisites":null,
    "crosslistings":null,
    "terms_offered":[
