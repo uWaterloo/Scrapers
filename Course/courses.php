@@ -114,7 +114,7 @@ function parse_courses($subject)
         $data = strip_tags(current(current($tr)->find('td'))->innertext);
         if(strpos($data, '(Cross-listed') === 0)
         {
-          $course['offerings']['crosslistings'] = $data;
+          $course['crosslistings'] = trim(str_replace('(Cross-listed with ', '', $data), '() .');
           next($tr);
         }
       }
@@ -134,19 +134,19 @@ function parse_courses($subject)
         {
           if(strpos($data, 'Prereq') === 0)
           {
-            $course['prerequisites'] = $data;
+            $course['prerequisites'] = str_replace('Prereq: ', '', $data);
           }
           elseif(strpos($data, 'Antireq') === 0)
           {
-            $course['antirequisites'] = $data;
+            $course['antirequisites'] = str_replace('Antireq: ', '', $data);
           }
           elseif(strpos(ltrim($data, '('), 'Coreq') === 0)
           {
-            $course['corequisites'] = $data;
+            $course['corequisites'] = str_replace('Coreq: ', '', $data);
           }
           elseif(strpos($data, '(Cross-listed') === 0)
           {
-            $course['crosslistings'] = $data;
+            $course['crosslistings'] = trim(str_replace('(Cross-listed with ', '', $data), '() .');
           }
           elseif(strpos($data, 'Also offered by Distance Education') === 0 || strpos($data, 'Also offered Online') === 0)
           {
