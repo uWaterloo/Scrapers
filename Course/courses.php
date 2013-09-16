@@ -10,8 +10,41 @@ function parse_courses($subject)
   $html = str_get_html(file_get_contents($url));
   $elm  = $html->find('table');
 
+  $template = array(
+              'id' => null,
+              'department' => null,
+              'number' => null,
+              'title' => null,
+              'credits' => null,
+              'description' => null,
+              'instructions' => array(),
+              'prerequisites' => null,
+              'antirequisites' => null,
+              'corequisites' => null,
+              'crosslistings' => null,
+              'terms_offered' => array(),
+              'offerings' => array(
+                'online' => false,
+                'online_only' => false,
+                'st_jerome' => false,
+                'st_jerome_only' => false,
+                'renison' => false,
+                'renison_only' => false,
+                'conrad_grebel' => false,
+                'conrad_grebel_only' => false
+              ),
+              'needs_department_consent' => false,
+              'needs_instructor_consent' => false,
+              'extra' => null,
+              'notes' => null,
+              'calendar_year' => null,
+              'type' => null,
+              'url' => null
+              );
+
+
   $is_grad = strpos($url, 'GRDcourse') !== false;
-  $itype   = ($is_grad) ? 'Graduate' : 'Undergraduate';
+  $itype   = ($is_grad) ? 'graduate' : 'undergraduate';
   $urldata = explode('/', $url);
   $year    = ($is_grad) ? $urldata[5] : $urldata[3];
 
@@ -19,7 +52,7 @@ function parse_courses($subject)
   {
     if($table->width == '80%')
     {
-      $course  = array();
+      $course  = $template;
       $tr      = $table->find('tr');
 
       $leftCol = current(current($tr)->find('td[align=left]'));
@@ -30,7 +63,7 @@ function parse_courses($subject)
       {
         $course['department'] = $matches[1];
         $course['number']     = $matches[2];
-        $course['offerings']  = $matches[3];
+        $course['_offerings'] = $matches[3];
         $course['credits']    = $matches[4];
         $course['url']        = $url.'#'.$anchor;
       } 
@@ -40,7 +73,7 @@ function parse_courses($subject)
         $course['number']     = $matches[2];
         $course['title']      = sanitize($matches[3]);
         $course['credits']    = $matches[4];
-        $course['offerings']  = $matches[5];
+        $course['_offerings'] = $matches[5];
         $course['url']        = $url.'#'.$anchor;
       }
       else
@@ -51,7 +84,7 @@ function parse_courses($subject)
       $course['type'] = $itype;
       $course['calendar_year'] = $year;
 
-      $offerings = explode(',', $course['offerings']);
+      $offerings = explode(',', $course['_offerings']);
       $instructions = array('cln', 'dis', 'ens', 'ess', 'fld', 'lab', 'lec', 'orl', 'wrk',
                             'pra', 'prj', 'rdg', 'sem', 'stu', 'tlc', 'tst', 'tut', 'wsp');
 
@@ -63,7 +96,7 @@ function parse_courses($subject)
         }
       }
 
-      unset($course['offerings']);
+      unset($course['_offerings']);
 
       $data = current(current($tr)->find('td[align=right]'))->innertext;
       preg_match('/Course ID: ([0-9]+)/i', $data, $matches);
@@ -81,7 +114,7 @@ function parse_courses($subject)
         $data = strip_tags(current(current($tr)->find('td'))->innertext);
         if(strpos($data, '(Cross-listed') === 0)
         {
-          $course['crosslistings'] = $data;
+          $course['offerings']['crosslistings'] = $data;
           next($tr);
         }
       }
@@ -113,23 +146,23 @@ function parse_courses($subject)
           }
           elseif(strpos($data, '(Cross-listed') === 0)
           {
-            $course['crosslist'] = $data;
+            $course['crosslistings'] = $data;
           }
           elseif(strpos($data, 'Also offered by Distance Education') === 0 || strpos($data, 'Also offered Online') === 0)
           {
-            $course['offered_online'] = true;
+            $course['offerings']['online'] = true;
           }
           elseif(strpos($data, 'Only offered by Distance Education') === 0|| strpos($data, 'Only offered Online') === 0)
           {
-            $course['only_online'] = true;
+            $course['offerings']['online_only'] = true;
           }
           elseif(strpos($data, 'Offered at St. Jerome\'s University') === 0)
           {
-            $course['only_st_jerome'] = true;
+            $course['offerings']['st_jerome_only'] = true;
           }
           elseif(strpos($data, 'Also offered at St. Jerome\'s University') === 0)
           {
-            $course['has_st_jerome'] = true;
+            $course['offerings']['st_jerome'] = true;
           }
           elseif(strpos($data, 'Department Consent Required') === 0)
           {
@@ -137,19 +170,19 @@ function parse_courses($subject)
           }
           elseif(strpos($data, 'Offered at Renison College') === 0 || strpos($data, 'Offered at Renison University College') === 0)
           {
-            $course['only_renison'] = true;
+            $course['offerings']['renison_only'] = true;
           }
           elseif(strpos($data, 'Also offered at Renison College') === 0 || strpos($data, 'Also offered at Renison University College') === 0)
           {
-            $course['has_renison'] = true;
+            $course['offerings']['renison'] = true;
           }
           elseif(strpos($data, 'Offered at Conrad Grebel University College') === 0)
           {
-            $course['only_conrad_grebel'] = true;
+            $course['offerings']['conrad_grebel_only'] = true;
           }
           elseif(strpos($data, 'Also offered at Conrad Grebel University College') === 0)
           {
-            $course['has_conrad_grebel'] = true;
+            $course['offerings']['conrad_grebel'] = true;
           }
           elseif(strpos($data, 'Instructor Consent Required') === 0)
           {
