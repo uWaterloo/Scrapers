@@ -20,7 +20,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
   $data = file_get_contents('http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?'.$query);
   
   // Column data keys
-  $col_keys = array('course_id', 'section', 'campus', 'associated_classes', 
+  $col_keys = array('course_id', 'section', 'campus', 'associated_class', 
                     'related_component_1', 'related_component_2', 'enrollment_capacity',
                     'enrollment_total', 'waiting_capacity', 'waiting_total');
   
