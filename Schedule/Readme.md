@@ -8,115 +8,103 @@ multi dates/locations.
 
 ```php
 <?php
-echo parse_schedule('1139', 'PHYS', '236')
+echo json_encode(parse_schedule('1139', 'PHYS', '236'));
 ?>
 ```
 
 ### Output
 
-```
-Array
-(
-    [0] => Array
-        (
-            [department] => PHYS
-            [number] => 236
-            [credits] => 0.5
-            [title] => Computational Physics 1
-            [course_id] => 6699
-            [section] => LEC 001
-            [campus] => UW U
-            [associated_classes] => 1
-            [related_component_1] => 101
-            [related_component_2] =>
-            [enrollment_capacity] => 120
-            [enrollment_total] => 84
-            [waiting_capacity] => 0
-            [waiting_total] => 0
-            [topic] =>
-            [reserves] => Array
-                (
-                )
-            [classes] => Array
-                (
-                    [0] => Array
-                        (
-                            [dates] => Array
-                                (
-                                    [start_time] => 08:30
-                                    [end_time] => 09:20
-                                    [weekdays] => MWF
-                                    [start_date] =>
-                                    [end_date] =>
-                                    [is_tba] =>
-                                    [is_cancelled] =>
-                                )
-                            [location] => Array
-                                (
-                                    [building] => B1
-                                    [room] => 370
-                                )
-                            [instructors] => Array
-                                (
-                                    [0] => O'Donovan,Chris
-                                )
-                        )
-                )
-            [held_with] => Array
-                (
-                )
-        )
+```json
+[
+   {
+      "department":"PHYS",
+      "number":"236",
+      "credits":"0.5",
+      "title":"Computational Physics 1",
+      "course_id":"6699",
+      "section":"LEC 001",
+      "campus":"UW U",
+      "associated_class":"1",
+      "related_component_1":"101",
+      "related_component_2":"",
+      "enrollment_capacity":"120",
+      "enrollment_total":"78",
+      "waiting_capacity":"0",
+      "waiting_total":"0",
+      "topic":"",
+      "reserves":[
 
-    [1] => Array
-        (
-            [department] => PHYS
-            [number] => 236
-            [credits] => 0.5
-            [title] => Computational Physics 1
-            [course_id] => 6700
-            [section] => TUT 101
-            [campus] => UW U
-            [associated_classes] => 1
-            [related_component_1] =>
-            [related_component_2] =>
-            [enrollment_capacity] => 120
-            [enrollment_total] => 84
-            [waiting_capacity] => 0
-            [waiting_total] => 0
-            [topic] =>
-            [reserves] => Array
-                (
-                )
-            [classes] => Array
-                (
-                    [0] => Array
-                        (
-                            [dates] => Array
-                                (
-                                    [start_time] => 09:30
-                                    [end_time] => 10:20
-                                    [weekdays] => F
-                                    [start_date] =>
-                                    [end_date] =>
-                                    [is_tba] =>
-                                    [is_cancelled] =>
-                                )
-                            [location] => Array
-                                (
-                                    [building] => B1
-                                    [room] => 370
-                                )
-                            [instructors] => Array
-                                (
-                                    [0] => O'Donovan,Chris
-                                )
-                        )
-                )
-            [held_with] => Array
-                (
-                )
-        )
-)
+      ],
+      "classes":[
+         {
+            "dates":{
+               "start_time":"08:30",
+               "end_time":"09:20",
+               "weekdays":"MWF",
+               "start_date":"",
+               "end_date":"",
+               "is_tba":false,
+               "is_cancelled":false,
+               "is_closed":false
+            },
+            "location":{
+               "building":"B1",
+               "room":"370"
+            },
+            "instructors":[
+               "O'Donovan,Chris"
+            ]
+         }
+      ],
+      "held_with":[
+
+      ]
+   },
+   {
+      "department":"PHYS",
+      "number":"236",
+      "credits":"0.5",
+      "title":"Computational Physics 1",
+      "course_id":"6700",
+      "section":"TUT 101",
+      "campus":"UW U",
+      "associated_class":"1",
+      "related_component_1":"",
+      "related_component_2":"",
+      "enrollment_capacity":"120",
+      "enrollment_total":"78",
+      "waiting_capacity":"0",
+      "waiting_total":"0",
+      "topic":"",
+      "reserves":[
+
+      ],
+      "classes":[
+         {
+            "dates":{
+               "start_time":"09:30",
+               "end_time":"10:20",
+               "weekdays":"F",
+               "start_date":"",
+               "end_date":"",
+               "is_tba":false,
+               "is_cancelled":false,
+               "is_closed":false
+            },
+            "location":{
+               "building":"B1",
+               "room":"370"
+            },
+            "instructors":[
+               "O'Donovan,Chris"
+            ]
+         }
+      ],
+      "held_with":[
+
+      ]
+   }
+]
 ```
 
 ### How can I help?
