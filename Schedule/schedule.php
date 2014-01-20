@@ -31,7 +31,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
   $additional_keys_arrays = array('reserves', 'classes', 'held_with');
   
   // Column keys for class data
-  $class_col_keys = array('dates', 'location', 'instructors');
+  $class_col_keys = array('date', 'location', 'instructors');
   
   // Additional data for classes ('dates')
   $class_additional_keys = array();
@@ -131,7 +131,7 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           } else if ($index < count($col_keys)) {
             $new_class[$col_keys[$index]] = beautify($td->innertext);
           } else {
-            if ($class_col_keys[$index - count($col_keys)] == 'dates') {
+            if ($class_col_keys[$index - count($col_keys)] == 'date') {
               $value = beautify($td->innertext);
               $class_class[$class_col_keys[$index - count($col_keys)]] = parse_date($value);
                               
@@ -171,11 +171,11 @@ function parse_schedule($term_id, $faculty, $course, $level = 'under')
           $classes[count($classes) - 1]['reserves'][] = $reserve;
         }
         
-        if ($class_class['dates']['is_cancelled'] || $class_class['dates']['is_closed']) {
+        if ($class_class['date']['is_cancelled'] || $class_class['date']['is_closed']) {
           $previousClass = $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1];
           
-          $previousClass['dates']['is_cancelled'] = $class_class['dates']['is_cancelled'];
-          $previousClass['dates']['is_closed']    = $class_class['dates']['is_closed'];
+          $previousClass['date']['is_cancelled'] = $class_class['date']['is_cancelled'];
+          $previousClass['date']['is_closed']    = $class_class['date']['is_closed'];
           
           $classes[count($classes) - 1]['classes'][count($classes[count($classes) - 1]['classes']) - 1] = $previousClass;
         } else {
@@ -327,4 +327,5 @@ print_r(parse_schedule('1139', 'PHYS', '490'));
 print_r(parse_schedule('1139', 'PHYS', '771', 'grad'));
 
 print_r(parse_schedule('1139', 'PHYS', '611', 'grad'));
+
 ?>
