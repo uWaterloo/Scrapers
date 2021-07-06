@@ -1,11 +1,7 @@
 ## Scrapers
 
 This repository contains some scrapers that power the OpenData API.
-
-**Contributing**
-
-You are free to modify and submit scrapers to this repository where
-bug fixes and enhancements will be reflected on the API.
+This is a public repo modified from [UWaterloo's scraper repository](https://github.com/uWaterloo/Scrapers), by Kartik Talwar and Zachary Seguin.
 
 **Requesting**
 
